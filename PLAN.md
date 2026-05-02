@@ -38,13 +38,13 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 
 ### 1.2 data model and local storage
 #### tasks
-- [ ] define log entry fields: id, timestamp_iso, edited_at, deleted_at, day_key
-- [ ] compute day_key with local timezone using date-fns formatting
-- [ ] implement storage helpers: create, update, soft delete, query by day_key
-- [ ] add a storage version flag to enable future migrations
+- [x] define log entry fields: id, timestamp_iso, edited_at, deleted_at, day_key
+- [x] compute day_key with local timezone using date-fns formatting
+- [x] implement storage helpers: create, update, soft delete, query by day_key
+- [x] add a storage version flag to enable future migrations
 #### learnings
-- [ ] learn if day_key grouping matches user expectations around midnight
-- [ ] learn if storage remains fast with 30+ logs per day
+- [x] learn if day_key grouping matches user expectations around midnight
+- [x] learn if storage remains fast with 30+ logs per day
 
 ### 1.3 base ui system
 #### tasks
