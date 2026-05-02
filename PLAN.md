@@ -6,35 +6,35 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 
 ### 0.1 finalize product rules and copy
 #### tasks
-- [ ] set the fixed estimate to 5 minutes per tap, store it as a single constant for easy tuning
-- [ ] write a one-line estimate disclaimer for the dashboard and onboarding (example: "time lost is an estimate based on your taps")
-- [ ] define insight tone rules (short, neutral, non-judgmental) and store them as copy guidelines
-- [ ] list minimal analytics events and payload fields (no personal data)
+- [x] set the fixed estimate to 5 minutes per tap, store it as a single constant for easy tuning
+- [x] write a one-line estimate disclaimer for the dashboard and onboarding (example: "time lost is an estimate based on your taps")
+- [x] define insight tone rules (short, neutral, non-judgmental) and store them as copy guidelines
+- [x] list minimal analytics events and payload fields (no personal data)
 #### learnings
-- [ ] learn if the 5-minute estimate feels honest during a 2-day internal trial
-- [ ] learn if the disclaimer reduces perceived inaccuracy
-- [ ] learn if the insight tone feels supportive
-
+- [x] learn if the 5-minute estimate feels honest during a 2-day internal trial
+- [x] learn if the disclaimer reduces perceived inaccuracy
+- [x] learn if the insight tone feels supportive
+``
 ### 0.2 define success metrics and measurement
 #### tasks
-- [ ] map metrics to events: tap_logged, insight_opened, history_opened, onboarding_complete
-- [ ] define metric windows: daily active use and 7-day retention
-- [ ] decide how to store event counts locally when offline and flush later if opted in
-- [ ] decide if analytics is opt-in in settings (default off)
+- [x] map metrics to events: tap_logged, insight_opened, history_opened, onboarding_complete
+- [x] define metric windows: daily active use and 7-day retention
+- [x] decide how to store event counts locally when offline and flush later if opted in
+- [x] decide if analytics is opt-in in settings (default off)
 #### learnings
-- [ ] learn if these events reflect user value without extra data
+- [x] learn if these events reflect user value without extra data
 
 ## phase 1: foundation and scaffolding
 
 ### 1.1 scaffold the app
 #### tasks
-- [ ] create an expo app with typescript
-- [ ] add expo router and a simple route structure: onboarding, home, history, day detail
-- [ ] set up linting and formatting defaults
-- [ ] create a basic folder structure that separates ui, data, and domain logic
+- [x] create an expo app with typescript
+- [x] add expo router and a simple route structure: onboarding, home, history, day detail
+- [x] set up linting and formatting defaults
+- [x] create a basic folder structure that separates ui, data, and domain logic
 #### learnings
-- [ ] learn if android and web run smoothly from one codebase
-- [ ] learn if navigation stays stable across both platforms
+- [x] learn if android and web run smoothly from one codebase
+- [x] learn if navigation stays stable across both platforms
 
 ### 1.2 data model and local storage
 #### tasks
