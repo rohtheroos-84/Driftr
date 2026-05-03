@@ -48,13 +48,13 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 
 ### 1.3 base ui system
 #### tasks
-- [ ] define spacing scale, typography, and color tokens
-- [ ] build a primary tap button with clear pressed state
-- [ ] build a card component for summary and insight
-- [ ] set responsive layout rules for narrow and wide screens
+- [x] define spacing scale, typography, and color tokens
+- [x] build a primary tap button with clear pressed state
+- [x] build a card component for summary and insight
+- [x] set responsive layout rules for narrow and wide screens
 #### learnings
-- [ ] learn if the primary tap feels instant and obvious
-- [ ] learn if the layout stays readable on small screens
+- [x] learn if the primary tap feels instant and obvious
+- [x] learn if the layout stays readable on small screens
 
 ## phase 2: logging flow
 
