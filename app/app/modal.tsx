@@ -1,35 +1,34 @@
-import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+import { AppText } from '@/src/ui/components/AppText';
+import { Screen } from '@/src/ui/components/Screen';
+import { SurfaceCard } from '@/src/ui/components/SurfaceCard';
+import { theme } from '@/src/ui/theme';
 
 export default function ModalScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Modal</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/modal.tsx" />
-
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-    </View>
+    <Screen>
+      <View style={styles.content}>
+        <AppText variant="display">about driftr</AppText>
+        <AppText variant="caption" tone="muted">
+          a tiny tool to notice where time drifts away
+        </AppText>
+        <SurfaceCard style={styles.card}>
+          <AppText variant="body">
+            driftr turns one-tap logs into a daily summary and a single insight.
+            it is built to be fast, honest, and non-judgmental.
+          </AppText>
+        </SurfaceCard>
+      </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  content: {
+    gap: theme.spacing.lg,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  card: {
+    gap: theme.spacing.sm,
   },
 });
