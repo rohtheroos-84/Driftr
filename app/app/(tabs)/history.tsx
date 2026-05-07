@@ -14,22 +14,22 @@ type DaySummary = {
 
 const samples: DaySummary[] = [
   {
-    label: 'today',
+    label: 'today [sample]',
     taps: 0,
-    loss: '0m',
-    insight: 'no data yet. log a drift to unlock a pattern.',
+    loss: '[0m]',
+    insight: '[no data yet. log a drift to unlock a pattern.]',
   },
   {
-    label: 'yesterday',
+    label: 'yesterday [sample]',
     taps: 6,
-    loss: '30m',
-    insight: 'most drifts clustered after lunch.',
+    loss: '[30m]',
+    insight: '[most drifts clustered after lunch.]',
   },
   {
-    label: '2 days ago',
+    label: '2 days ago [sample]',
     taps: 3,
-    loss: '15m',
-    insight: 'evening drift was the strongest window.',
+    loss: '[15m]',
+    insight: '[evening drift was the strongest window.]',
   },
 ];
 
@@ -40,7 +40,7 @@ export default function HistoryScreen() {
         <View style={styles.header}>
           <AppText variant="display">history</AppText>
           <AppText variant="caption" tone="muted">
-            your last 14 days, at a glance
+            your last 14 days, at a glance [sample]
           </AppText>
         </View>
 
