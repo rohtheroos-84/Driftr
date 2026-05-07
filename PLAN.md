@@ -60,13 +60,13 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 
 ### 2.1 one-tap logging flow
 #### tasks
-- [ ] place a large primary button on the home screen
-- [ ] on tap, create a log entry, persist it, and update in-memory state
-- [ ] show immediate feedback (haptic on android, subtle toast on web)
-- [ ] allow a brief undo window after a tap
+- [x] place a large primary button on the home screen
+- [x] on tap, create a log entry, persist it, and update in-memory state
+- [x] show immediate feedback (haptic on android, subtle toast on web)
+- [x] allow a brief undo window after a tap
 #### learnings
-- [ ] learn if the tap flow adds less than 1 second of friction
-- [ ] learn if the feedback is enough without being noisy
+- [x] learn if the tap flow adds less than 1 second of friction
+- [x] learn if the feedback is enough without being noisy
 
 ### 2.2 edit and delete logs
 #### tasks
