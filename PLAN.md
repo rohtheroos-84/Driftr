@@ -70,13 +70,13 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 
 ### 2.2 edit and delete logs
 #### tasks
-- [ ] show today’s logs with time labels
-- [ ] allow editing the timestamp with a simple time picker
-- [ ] allow delete with an undo action
-- [ ] ensure edits and deletes re-run day aggregation
+- [x] show today’s logs with time labels
+- [x] allow editing the timestamp with a simple time picker
+- [x] allow delete with an undo action
+- [x] ensure edits and deletes re-run day aggregation
 #### learnings
-- [ ] learn how often users edit versus delete
-- [ ] learn if undo is enough to handle accidental taps
+- [x] learn how often users edit versus delete
+- [x] learn if undo is enough to handle accidental taps
 
 ### 2.3 resilience and edge cases
 #### tasks
