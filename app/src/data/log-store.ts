@@ -93,6 +93,31 @@ export async function getLogsForDay(dayKey: string): Promise<LogEntry[]> {
   return logs.filter((log) => log.dayKey === dayKey);
 }
 
+export async function recomputeDayKeys(): Promise<boolean> {
+  const logs = await readLogs();
+  let changed = false;
+
+  const updatedLogs = logs.map((log) => {
+    const nextDayKey = toDayKeyFromIso(log.timestampIso);
+
+    if (nextDayKey === log.dayKey) {
+      return log;
+    }
+
+    changed = true;
+    return {
+      ...log,
+      dayKey: nextDayKey,
+    };
+  });
+
+  if (changed) {
+    await writeLogs(updatedLogs);
+  }
+
+  return changed;
+}
+
 export async function addLog(date: Date = new Date()): Promise<LogEntry> {
   const log = createLogEntry(date);
   const logs = await readLogs();

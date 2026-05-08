@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  AppState,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
 import * as Haptics from 'expo-haptics';
@@ -12,6 +19,7 @@ import { Toast } from '@/src/ui/components/Toast';
 import {
   addLog,
   getLogsForDay,
+  recomputeDayKeys,
   setLogDeletedById,
   updateLogTime,
 } from '@/src/data/log-store';
@@ -43,15 +51,30 @@ export default function HomeScreen() {
   const [pickerValue, setPickerValue] = useState<Date | null>(null);
   const undoTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const loadTodayLogs = useCallback(async () => {
-    const dayKey = toDayKey(new Date());
+  const loadTodayLogs = useCallback(async (dayKey: string) => {
     const logs = await getLogsForDay(dayKey);
     setTodayLogs(logs);
   }, []);
 
-  useEffect(() => {
-    void loadTodayLogs();
+  const refreshForCurrentDay = useCallback(async () => {
+    await recomputeDayKeys();
+    const dayKey = toDayKey(new Date());
+    await loadTodayLogs(dayKey);
   }, [loadTodayLogs]);
+
+  useEffect(() => {
+    void refreshForCurrentDay();
+  }, [refreshForCurrentDay]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        void refreshForCurrentDay();
+      }
+    });
+
+    return () => subscription.remove();
+  }, [refreshForCurrentDay]);
 
   useEffect(() => {
     return () => {
@@ -121,7 +144,7 @@ export default function HomeScreen() {
       await setLogDeletedById(undoLog.id, false);
     }
 
-    await loadTodayLogs();
+    await refreshForCurrentDay();
     setToastVisible(false);
     setToastActionLabel(undefined);
     setUndoLog(null);
@@ -148,7 +171,7 @@ export default function HomeScreen() {
     const merged = mergeDateAndTime(baseDate, time);
     const updated = await updateLogTime(log.id, merged);
 
-    await loadTodayLogs();
+    await refreshForCurrentDay();
 
     if (updated) {
       showToast({
