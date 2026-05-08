@@ -80,10 +80,10 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 
 ### 2.3 resilience and edge cases
 #### tasks
-- [ ] handle day rollover by reloading and regrouping on app resume
-- [ ] handle timezone changes by recomputing day_key on startup
-- [ ] define empty states for no logs
-- [ ] ensure deleted logs never affect summaries
+- [x] handle day rollover by reloading and regrouping on app resume
+- [x] handle timezone changes by recomputing day_key on startup
+- [x] define empty states for no logs
+- [x] ensure deleted logs never affect summaries
 #### learnings
 - [ ] learn which edge cases show up after a day of real use
 - [ ] learn if users expect cross-day corrections
