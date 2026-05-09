@@ -92,23 +92,23 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 
 ### 3.1 daily aggregation
 #### tasks
-- [ ] compute daily tap count from logs
-- [ ] estimate time lost as count * 5 minutes
-- [ ] display a summary card with count and estimate
-- [ ] keep aggregation in a pure function for testing
+- [x] compute daily tap count from logs
+- [x] estimate time lost as count * 5 minutes
+- [x] display a summary card with count and estimate
+- [x] keep aggregation in a pure function for testing
 #### learnings
-- [ ] learn if the estimate feels believable with real logs
-- [ ] learn if summary data is enough without detail
+- [x] learn if the estimate feels believable with real logs
+- [x] learn if summary data is enough without detail
 
 ### 3.2 insight rules
 #### tasks
-- [ ] implement a small rule engine with priority order
-- [ ] add rule examples: burst behavior (3+ taps in 30 minutes), peak window (one hour holds 40%+ of taps), scattered pattern (no hour above 25%)
-- [ ] ensure only one insight renders per day
-- [ ] draft 1-2 sentence insight templates per rule
+- [x] implement a small rule engine with priority order
+- [x] add rule examples: burst behavior (3+ taps in 30 minutes), peak window (one hour holds 40%+ of taps), scattered pattern (no hour above 25%)
+- [x] ensure only one insight renders per day
+- [x] draft 1-2 sentence insight templates per rule
 #### learnings
-- [ ] learn which rule feels most useful
-- [ ] learn if rule thresholds need tuning
+- [x] learn which rule feels most useful
+- [x] learn if rule thresholds need tuning
 
 ### 3.3 daily dashboard view
 #### tasks

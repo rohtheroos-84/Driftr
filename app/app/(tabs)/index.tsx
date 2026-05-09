@@ -24,6 +24,7 @@ import {
   updateLogTime,
 } from '@/src/data/log-store';
 import { aggregateDay } from '@/src/domain/daily-aggregation';
+import { getDailyInsight } from '@/src/domain/insight-engine';
 import { LogEntry } from '@/src/domain/log-entry';
 import { toDayKey } from '@/src/domain/time';
 import { theme } from '@/src/ui/theme';
@@ -249,10 +250,7 @@ export default function HomeScreen() {
   const lastDriftLabel = aggregation.lastLogIso
     ? `last drift at ${formatTime(aggregation.lastLogIso)}`
     : '[no drifts yet]';
-  const insightCopy =
-    tapCount === 0
-      ? '[no data yet. log a drift to unlock a pattern.]'
-      : '[insights unlock in phase 3. keep logging your drifts.]';
+  const insight = getDailyInsight(todayLogs);
 
   return (
     <Screen>
@@ -288,7 +286,10 @@ export default function HomeScreen() {
           <AppText variant="label" tone="muted">
             insight
           </AppText>
-          <AppText variant="body">{insightCopy}</AppText>
+          <AppText variant="title">{insight.title}</AppText>
+          <AppText variant="body" tone="muted">
+            {insight.detail}
+          </AppText>
         </SurfaceCard>
 
         <SurfaceCard style={styles.card}>
