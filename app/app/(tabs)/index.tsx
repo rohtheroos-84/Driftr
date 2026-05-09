@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AppState,
   Platform,
@@ -10,6 +10,7 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
 import * as Haptics from 'expo-haptics';
+import { Link } from 'expo-router';
 
 import { AppText } from '@/src/ui/components/AppText';
 import { Screen } from '@/src/ui/components/Screen';
@@ -23,16 +24,17 @@ import {
   setLogDeletedById,
   updateLogTime,
 } from '@/src/data/log-store';
-import { aggregateDay } from '@/src/domain/daily-aggregation';
+import { aggregateDay, getHourlyHistogram } from '@/src/domain/daily-aggregation';
 import { getDailyInsight } from '@/src/domain/insight-engine';
 import { LogEntry } from '@/src/domain/log-entry';
 import { toDayKey } from '@/src/domain/time';
 import { theme } from '@/src/ui/theme';
 
-const barHeights = [6, 14, 10, 24, 8, 18, 12, 5, 20, 9];
 const ESTIMATE_MINUTES_PER_TAP = 5;
 const UNDO_WINDOW_MS = 3200;
 const formatTime = (iso: string) => format(new Date(iso), 'h:mm a');
+const MIN_BAR_HEIGHT = 6;
+const MAX_BAR_HEIGHT = 28;
 
 const mergeDateAndTime = (base: Date, time: Date) => {
   const merged = new Date(base);
@@ -249,8 +251,9 @@ export default function HomeScreen() {
   );
   const lastDriftLabel = aggregation.lastLogIso
     ? `last drift at ${formatTime(aggregation.lastLogIso)}`
-    : '[no drifts yet]';
+    : 'no drifts yet';
   const insight = getDailyInsight(todayLogs);
+  const histogram = useMemo(() => getHourlyHistogram(todayLogs), [todayLogs]);
 
   return (
     <Screen>
@@ -293,14 +296,40 @@ export default function HomeScreen() {
         </SurfaceCard>
 
         <SurfaceCard style={styles.card}>
-          <AppText variant="label" tone="muted">
-            timeline [sample]
-          </AppText>
-          <View style={styles.timeline}>
-            {barHeights.map((height, index) => (
-              <View key={`bar-${index}`} style={[styles.bar, { height }]} />
-            ))}
+          <View style={styles.timelineHeader}>
+            <AppText variant="label" tone="muted">
+              timeline
+            </AppText>
+            <Link href="/history" asChild>
+              <Pressable hitSlop={10}>
+                <AppText variant="label" tone="accent">
+                  view history
+                </AppText>
+              </Pressable>
+            </Link>
           </View>
+          <View style={styles.timeline}>
+            {histogram.hours.map((count, index) => {
+              const height =
+                histogram.maxCount === 0
+                  ? MIN_BAR_HEIGHT
+                  : MIN_BAR_HEIGHT +
+                    (count / histogram.maxCount) * (MAX_BAR_HEIGHT - MIN_BAR_HEIGHT);
+              const opacity = count === 0 ? 0.2 : 0.75;
+
+              return (
+                <View
+                  key={`bar-${index}`}
+                  style={[styles.bar, { height, opacity }]}
+                />
+              );
+            })}
+          </View>
+          {histogram.maxCount === 0 ? (
+            <AppText variant="caption" tone="muted">
+              no drifts yet. the timeline will fill as you log.
+            </AppText>
+          ) : null}
         </SurfaceCard>
 
         <SurfaceCard style={styles.card}>
@@ -309,7 +338,7 @@ export default function HomeScreen() {
           </AppText>
           {orderedLogs.length === 0 ? (
             <AppText variant="caption" tone="muted">
-              [no drifts logged yet]
+              no drifts logged yet
             </AppText>
           ) : (
             <View style={styles.logList}>
@@ -384,6 +413,11 @@ const styles = StyleSheet.create({
   },
   card: {
     gap: theme.spacing.sm,
+  },
+  timelineHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   summaryRow: {
     flexDirection: 'row',
