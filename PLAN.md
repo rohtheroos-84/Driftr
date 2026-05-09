@@ -112,13 +112,13 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 
 ### 3.3 daily dashboard view
 #### tasks
-- [ ] layout summary, insight, and timeline on a single screen
-- [ ] implement a simple hourly histogram from tap counts
-- [ ] add a link to the history view
-- [ ] keep dashboard load under 200ms after storage load
+- [x] layout summary, insight, and timeline on a single screen
+- [x] implement a simple hourly histogram from tap counts
+- [x] add a link to the history view
+- [x] keep dashboard load under 200ms after storage load
 #### learnings
-- [ ] learn if the timeline helps pattern recognition
-- [ ] learn if the screen feels uncluttered
+- [x] learn if the timeline helps pattern recognition
+- [x] learn if the screen feels uncluttered
 
 ## phase 4: history and pattern review
 
