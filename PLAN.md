@@ -85,8 +85,8 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 - [x] define empty states for no logs
 - [x] ensure deleted logs never affect summaries
 #### learnings
-- [ ] learn which edge cases show up after a day of real use
-- [ ] learn if users expect cross-day corrections
+- [X] learn which edge cases show up after a day of real use
+- [X] learn if users expect cross-day corrections
 
 ## phase 3: daily summary and insight
 

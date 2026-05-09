@@ -23,6 +23,7 @@ import {
   setLogDeletedById,
   updateLogTime,
 } from '@/src/data/log-store';
+import { aggregateDay } from '@/src/domain/daily-aggregation';
 import { LogEntry } from '@/src/domain/log-entry';
 import { toDayKey } from '@/src/domain/time';
 import { theme } from '@/src/ui/theme';
@@ -238,15 +239,15 @@ export default function HomeScreen() {
     await applyUpdatedTime(log, selectedDate);
   };
 
-  const tapCount = todayLogs.length;
+  const aggregation = aggregateDay(todayLogs, ESTIMATE_MINUTES_PER_TAP);
+  const tapCount = aggregation.tapCount;
   const tapLabel = tapCount === 1 ? 'tap' : 'taps';
-  const estimatedLoss = tapCount * ESTIMATE_MINUTES_PER_TAP;
+  const estimatedLoss = aggregation.estimatedLossMinutes;
   const orderedLogs = [...todayLogs].sort((a, b) =>
     b.timestampIso.localeCompare(a.timestampIso),
   );
-  const lastLog = orderedLogs[0];
-  const lastDriftLabel = lastLog
-    ? `last drift at ${formatTime(lastLog.timestampIso)}`
+  const lastDriftLabel = aggregation.lastLogIso
+    ? `last drift at ${formatTime(aggregation.lastLogIso)}`
     : '[no drifts yet]';
   const insightCopy =
     tapCount === 0
