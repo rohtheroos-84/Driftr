@@ -1,65 +1,121 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { AppState, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Link } from 'expo-router';
 
+import { getActiveLogs, recomputeDayKeys } from '@/src/data/log-store';
+import { aggregateDay } from '@/src/domain/daily-aggregation';
+import { formatDayLabel } from '@/src/domain/day-label';
+import { getDailyInsight } from '@/src/domain/insight-engine';
+import { LogEntry } from '@/src/domain/log-entry';
 import { AppText } from '@/src/ui/components/AppText';
 import { Screen } from '@/src/ui/components/Screen';
 import { SurfaceCard } from '@/src/ui/components/SurfaceCard';
 import { theme } from '@/src/ui/theme';
 
 type DaySummary = {
+  dayKey: string;
   label: string;
-  taps: number;
-  loss: string;
-  insight: string;
+  tapCount: number;
+  estimatedLoss: number;
+  insightTitle: string;
 };
 
-const samples: DaySummary[] = [
-  {
-    label: 'today [sample]',
-    taps: 0,
-    loss: '[0m]',
-    insight: '[no data yet. log a drift to unlock a pattern.]',
-  },
-  {
-    label: 'yesterday [sample]',
-    taps: 6,
-    loss: '[30m]',
-    insight: '[most drifts clustered after lunch.]',
-  },
-  {
-    label: '2 days ago [sample]',
-    taps: 3,
-    loss: '[15m]',
-    insight: '[evening drift was the strongest window.]',
-  },
-];
+const ESTIMATE_MINUTES_PER_TAP = 5;
+const MAX_DAYS = 14;
+
+const groupByDayKey = (logs: LogEntry[]) => {
+  const map = new Map<string, LogEntry[]>();
+
+  logs.forEach((log) => {
+    const entries = map.get(log.dayKey) ?? [];
+    entries.push(log);
+    map.set(log.dayKey, entries);
+  });
+
+  return map;
+};
 
 export default function HistoryScreen() {
+  const [summaries, setSummaries] = useState<DaySummary[]>([]);
+
+  const loadHistory = useCallback(async () => {
+    await recomputeDayKeys();
+    const logs = await getActiveLogs();
+    const grouped = groupByDayKey(logs);
+    const dayKeys = Array.from(grouped.keys()).sort((a, b) => b.localeCompare(a));
+
+    const nextSummaries = dayKeys.slice(0, MAX_DAYS).map((dayKey) => {
+      const dayLogs = grouped.get(dayKey) ?? [];
+      const aggregation = aggregateDay(dayLogs, ESTIMATE_MINUTES_PER_TAP);
+      const insight = getDailyInsight(dayLogs);
+
+      return {
+        dayKey,
+        label: formatDayLabel(dayKey),
+        tapCount: aggregation.tapCount,
+        estimatedLoss: aggregation.estimatedLossMinutes,
+        insightTitle: insight.title,
+      };
+    });
+
+    setSummaries(nextSummaries);
+  }, []);
+
+  useEffect(() => {
+    void loadHistory();
+  }, [loadHistory]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        void loadHistory();
+      }
+    });
+
+    return () => subscription.remove();
+  }, [loadHistory]);
+
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <AppText variant="display">history</AppText>
           <AppText variant="caption" tone="muted">
-            your last 14 days, at a glance [sample]
+            your last 14 days, at a glance
           </AppText>
         </View>
 
-        {samples.map((item) => (
-          <SurfaceCard key={item.label} style={styles.card}>
-            <View style={styles.row}>
-              <AppText variant="label" tone="muted">
-                {item.label}
-              </AppText>
-              <AppText variant="caption" tone="muted">
-                {item.taps} taps
-              </AppText>
-            </View>
-            <AppText variant="title">{item.loss} estimated</AppText>
+        {summaries.length === 0 ? (
+          <SurfaceCard style={styles.card}>
             <AppText variant="body" tone="muted">
-              {item.insight}
+              no history yet. log a drift to build your timeline.
             </AppText>
           </SurfaceCard>
-        ))}
+        ) : (
+          summaries.map((item) => (
+            <Link key={item.dayKey} href={`/history/${item.dayKey}`} asChild>
+              <Pressable accessibilityRole="button">
+                <SurfaceCard style={styles.card}>
+                  <View style={styles.row}>
+                    <AppText variant="label" tone="muted">
+                      {item.label}
+                    </AppText>
+                    <AppText variant="caption" tone="muted">
+                      {item.tapCount} taps
+                    </AppText>
+                  </View>
+                  <AppText variant="title">{item.estimatedLoss}m estimated</AppText>
+                  <AppText variant="body" tone="muted">
+                    insight: {item.insightTitle}
+                  </AppText>
+                  <AppText variant="label" tone="accent">
+                    view details
+                  </AppText>
+                </SurfaceCard>
+              </Pressable>
+            </Link>
+          ))
+        )}
       </ScrollView>
     </Screen>
   );
