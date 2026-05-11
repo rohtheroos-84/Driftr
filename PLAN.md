@@ -124,18 +124,18 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 
 ### 4.1 history list
 #### tasks
-- [ ] group logs by day_key and list recent days (default last 14)
-- [ ] show key metrics per day: tap count, estimate, insight title
-- [ ] open a day detail view with summary and timeline
+- [x] group logs by day_key and list recent days (default last 14)
+- [x] show key metrics per day: tap count, estimate, insight title
+- [x] open a day detail view with summary and timeline
 #### learnings
-- [ ] learn how far back users browse
-- [ ] learn which summary fields they rely on
+- [x] learn how far back users browse
+- [x] learn which summary fields they rely on
 
 ### 4.2 pattern comparison
 #### tasks
-- [ ] show a simple comparison: today vs yesterday
-- [ ] highlight the top hour across the last 7 days
-- [ ] keep comparisons minimal and avoid extra charts
+- [x] show a simple comparison: today vs yesterday
+- [x] highlight the top hour across the last 7 days
+- [x] keep comparisons minimal and avoid extra charts
 #### learnings
 - [ ] learn if comparisons add clarity or noise
 - [ ] learn the best time window granularity

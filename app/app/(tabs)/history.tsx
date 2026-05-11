@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AppState, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Link } from 'expo-router';
 
@@ -7,6 +7,7 @@ import { aggregateDay } from '@/src/domain/daily-aggregation';
 import { formatDayLabel } from '@/src/domain/day-label';
 import { getDailyInsight } from '@/src/domain/insight-engine';
 import { LogEntry } from '@/src/domain/log-entry';
+import { buildPatternComparison } from '@/src/domain/pattern-comparison';
 import { AppText } from '@/src/ui/components/AppText';
 import { Screen } from '@/src/ui/components/Screen';
 import { SurfaceCard } from '@/src/ui/components/SurfaceCard';
@@ -37,6 +38,9 @@ const groupByDayKey = (logs: LogEntry[]) => {
 
 export default function HistoryScreen() {
   const [summaries, setSummaries] = useState<DaySummary[]>([]);
+  const [comparison, setComparison] = useState<ReturnType<
+    typeof buildPatternComparison
+  > | null>(null);
 
   const loadHistory = useCallback(async () => {
     await recomputeDayKeys();
@@ -59,6 +63,7 @@ export default function HistoryScreen() {
     });
 
     setSummaries(nextSummaries);
+    setComparison(buildPatternComparison(logs, ESTIMATE_MINUTES_PER_TAP));
   }, []);
 
   useEffect(() => {
@@ -75,6 +80,34 @@ export default function HistoryScreen() {
     return () => subscription.remove();
   }, [loadHistory]);
 
+  const comparisonCopy = useMemo(() => {
+    if (!comparison) {
+      return null;
+    }
+
+    const deltaCountLabel =
+      comparison.deltaCount === 0
+        ? 'even with yesterday'
+        : `${comparison.deltaCount > 0 ? '+' : ''}${comparison.deltaCount} taps`;
+    const deltaLossLabel =
+      comparison.deltaLossMinutes === 0
+        ? 'same estimated loss'
+        : `${comparison.deltaLossMinutes > 0 ? '+' : ''}${comparison.deltaLossMinutes}m`;
+
+    const topHourLabel = comparison.topHour
+      ? `${comparison.topHour.label} (${comparison.topHour.count} taps, ${Math.round(
+          comparison.topHour.share * 100,
+        )}%)`
+      : 'not enough data yet';
+
+    return {
+      todayLine: `today: ${comparison.todayCount} taps (${comparison.todayLossMinutes}m)` ,
+      yesterdayLine: `yesterday: ${comparison.yesterdayCount} taps (${comparison.yesterdayLossMinutes}m)` ,
+      deltaLine: `change: ${deltaCountLabel}, ${deltaLossLabel}` ,
+      topHourLine: `top hour (last 7 days): ${topHourLabel}` ,
+    };
+  }, [comparison]);
+
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -84,6 +117,26 @@ export default function HistoryScreen() {
             your last 14 days, at a glance
           </AppText>
         </View>
+
+        {comparisonCopy ? (
+          <SurfaceCard style={styles.card}>
+            <AppText variant="label" tone="muted">
+              comparisons
+            </AppText>
+            <View style={styles.comparisonBlock}>
+              <AppText variant="body">{comparisonCopy.todayLine}</AppText>
+              <AppText variant="caption" tone="muted">
+                {comparisonCopy.yesterdayLine}
+              </AppText>
+              <AppText variant="caption" tone="accent">
+                {comparisonCopy.deltaLine}
+              </AppText>
+            </View>
+            <View style={styles.comparisonBlock}>
+              <AppText variant="body">{comparisonCopy.topHourLine}</AppText>
+            </View>
+          </SurfaceCard>
+        ) : null}
 
         {summaries.length === 0 ? (
           <SurfaceCard style={styles.card}>
@@ -137,5 +190,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  comparisonBlock: {
+    gap: theme.spacing.xs,
   },
 });
