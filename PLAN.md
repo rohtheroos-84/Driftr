@@ -137,17 +137,17 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 - [x] highlight the top hour across the last 7 days
 - [x] keep comparisons minimal and avoid extra charts
 #### learnings
-- [ ] learn if comparisons add clarity or noise
-- [ ] learn the best time window granularity
+- [x] learn if comparisons add clarity or noise
+- [x] learn the best time window granularity
 
 ### 4.3 editing in history
 #### tasks
-- [ ] allow editing and deleting logs from past days
-- [ ] recompute affected day summaries
-- [ ] show a brief "updated" notice after changes
+- [x] allow editing and deleting logs from past days
+- [x] recompute affected day summaries
+- [x] show a brief "updated" notice after changes
 #### learnings
-- [ ] learn how often users edit past logs
-- [ ] learn if history edits affect trust
+- [x] learn how often users edit past logs
+- [x] learn if history edits affect trust
 
 ## phase 5: onboarding and product polish
 
