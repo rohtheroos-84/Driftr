@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AppState, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Link } from 'expo-router';
 
 import { getActiveLogs, recomputeDayKeys } from '@/src/data/log-store';
@@ -69,6 +70,12 @@ export default function HistoryScreen() {
   useEffect(() => {
     void loadHistory();
   }, [loadHistory]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadHistory();
+    }, [loadHistory]),
+  );
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {

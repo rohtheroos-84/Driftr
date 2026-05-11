@@ -1,8 +1,21 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { format } from 'date-fns';
 import { Link, useLocalSearchParams } from 'expo-router';
 
-import { getLogsForDay, recomputeDayKeys } from '@/src/data/log-store';
+import {
+  getLogsForDay,
+  recomputeDayKeys,
+  setLogDeletedById,
+  updateLogTime,
+} from '@/src/data/log-store';
 import { aggregateDay, getHourlyHistogram } from '@/src/domain/daily-aggregation';
 import { formatDayLabel } from '@/src/domain/day-label';
 import { getDailyInsight } from '@/src/domain/insight-engine';
@@ -10,11 +23,22 @@ import { LogEntry } from '@/src/domain/log-entry';
 import { AppText } from '@/src/ui/components/AppText';
 import { Screen } from '@/src/ui/components/Screen';
 import { SurfaceCard } from '@/src/ui/components/SurfaceCard';
+import { Toast } from '@/src/ui/components/Toast';
 import { theme } from '@/src/ui/theme';
 
 const ESTIMATE_MINUTES_PER_TAP = 5;
 const MIN_BAR_HEIGHT = 6;
 const MAX_BAR_HEIGHT = 28;
+const UNDO_WINDOW_MS = 3200;
+const formatTime = (iso: string) => format(new Date(iso), 'h:mm a');
+
+const mergeDateAndTime = (base: Date, time: Date) => {
+  const merged = new Date(base);
+  merged.setHours(time.getHours(), time.getMinutes(), 0, 0);
+  return merged;
+};
+
+type UndoAction = 'delete' | null;
 
 export default function DayDetailScreen() {
   const params = useLocalSearchParams();
@@ -22,6 +46,14 @@ export default function DayDetailScreen() {
   const dayKey = typeof dayKeyValue === 'string' ? dayKeyValue : '';
 
   const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [editingLog, setEditingLog] = useState<LogEntry | null>(null);
+  const [pickerValue, setPickerValue] = useState<Date | null>(null);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastActionLabel, setToastActionLabel] = useState<string | undefined>(undefined);
+  const [undoLog, setUndoLog] = useState<LogEntry | null>(null);
+  const [undoAction, setUndoAction] = useState<UndoAction>(null);
+  const undoTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadDay = useCallback(async () => {
     if (!dayKey) {
@@ -38,10 +70,141 @@ export default function DayDetailScreen() {
     void loadDay();
   }, [loadDay]);
 
+  useEffect(() => {
+    return () => {
+      if (undoTimeoutRef.current) {
+        clearTimeout(undoTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const label = dayKey ? formatDayLabel(dayKey, 'long') : 'day detail';
   const aggregation = aggregateDay(logs, ESTIMATE_MINUTES_PER_TAP);
   const insight = getDailyInsight(logs);
   const histogram = useMemo(() => getHourlyHistogram(logs), [logs]);
+
+  const showToast = ({
+    message,
+    actionLabel,
+    log,
+    action,
+  }: {
+    message: string;
+    actionLabel?: string;
+    log?: LogEntry;
+    action?: UndoAction;
+  }) => {
+    if (undoTimeoutRef.current) {
+      clearTimeout(undoTimeoutRef.current);
+    }
+
+    setToastMessage(message);
+    setToastActionLabel(actionLabel);
+    setUndoLog(log ?? null);
+    setUndoAction(action ?? null);
+    setToastVisible(true);
+
+    undoTimeoutRef.current = setTimeout(() => {
+      setToastVisible(false);
+      setToastActionLabel(undefined);
+      setUndoLog(null);
+      setUndoAction(null);
+    }, UNDO_WINDOW_MS);
+  };
+
+  const applyUpdatedTime = async (log: LogEntry, time: Date) => {
+    const baseDate = new Date(log.timestampIso);
+    const merged = mergeDateAndTime(baseDate, time);
+    const updated = await updateLogTime(log.id, merged);
+
+    await loadDay();
+
+    if (updated) {
+      showToast({ message: 'updated' });
+    }
+  };
+
+  const handleEdit = async (log: LogEntry) => {
+    if (Platform.OS === 'web') {
+      const response = prompt('set time (hh:mm, 24h)');
+
+      if (!response) {
+        return;
+      }
+
+      const [hourText, minuteText] = response.split(':');
+      const hours = Number(hourText);
+      const minutes = Number(minuteText);
+
+      if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
+        showToast({ message: 'invalid time format. use hh:mm.' });
+        return;
+      }
+
+      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+        showToast({ message: 'time must be between 00:00 and 23:59.' });
+        return;
+      }
+
+      const baseDate = new Date(log.timestampIso);
+      const updatedTime = new Date(baseDate);
+      updatedTime.setHours(hours, minutes, 0, 0);
+
+      await applyUpdatedTime(log, updatedTime);
+      return;
+    }
+
+    setEditingLog(log);
+    setPickerValue(new Date(log.timestampIso));
+  };
+
+  const handleTimePickerChange = async (
+    event: { type?: string },
+    selectedDate?: Date,
+  ) => {
+    if (!editingLog) {
+      return;
+    }
+
+    if (Platform.OS === 'android' && event.type === 'dismissed') {
+      setEditingLog(null);
+      setPickerValue(null);
+      return;
+    }
+
+    if (!selectedDate) {
+      return;
+    }
+
+    const log = editingLog;
+    setEditingLog(null);
+    setPickerValue(null);
+    await applyUpdatedTime(log, selectedDate);
+  };
+
+  const handleDelete = async (log: LogEntry) => {
+    await setLogDeletedById(log.id, true);
+    await loadDay();
+    showToast({ message: 'deleted', actionLabel: 'undo', log, action: 'delete' });
+  };
+
+  const handleUndo = async () => {
+    if (!undoLog || !undoAction) {
+      return;
+    }
+
+    if (undoAction === 'delete') {
+      await setLogDeletedById(undoLog.id, false);
+    }
+
+    await loadDay();
+    setToastVisible(false);
+    setToastActionLabel(undefined);
+    setUndoLog(null);
+    setUndoAction(null);
+  };
+
+  const orderedLogs = [...logs].sort((a, b) => b.timestampIso.localeCompare(a.timestampIso));
 
   return (
     <Screen>
@@ -130,7 +293,65 @@ export default function DayDetailScreen() {
             </AppText>
           ) : null}
         </SurfaceCard>
+
+        <SurfaceCard style={styles.card}>
+          <AppText variant="label" tone="muted">
+            logs
+          </AppText>
+          {orderedLogs.length === 0 ? (
+            <AppText variant="caption" tone="muted">
+              no drifts logged for this day.
+            </AppText>
+          ) : (
+            <View style={styles.logList}>
+              {orderedLogs.map((log, index) => (
+                <View key={log.id}>
+                  <View style={styles.logRow}>
+                    <View>
+                      <AppText variant="body">{formatTime(log.timestampIso)}</AppText>
+                      <AppText variant="caption" tone="muted">
+                        drift
+                      </AppText>
+                    </View>
+                    <View style={styles.logActions}>
+                      <Pressable onPress={() => handleEdit(log)} hitSlop={10}>
+                        <AppText variant="label" tone="accent">
+                          edit
+                        </AppText>
+                      </Pressable>
+                      <Pressable onPress={() => handleDelete(log)} hitSlop={10}>
+                        <AppText variant="label" tone="muted">
+                          delete
+                        </AppText>
+                      </Pressable>
+                    </View>
+                  </View>
+                  {index < orderedLogs.length - 1 ? (
+                    <View style={styles.logDivider} />
+                  ) : null}
+                </View>
+              ))}
+            </View>
+          )}
+          {editingLog && pickerValue ? (
+            <View style={styles.pickerWrap}>
+              <DateTimePicker
+                value={pickerValue}
+                mode="time"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                onChange={handleTimePickerChange}
+              />
+            </View>
+          ) : null}
+        </SurfaceCard>
       </ScrollView>
+
+      <Toast
+        visible={toastVisible}
+        message={toastMessage}
+        actionLabel={toastActionLabel}
+        onAction={handleUndo}
+      />
     </Screen>
   );
 }
@@ -170,5 +391,32 @@ const styles = StyleSheet.create({
     width: 10,
     borderRadius: theme.radii.sm,
     backgroundColor: theme.colors.accentSoft,
+  },
+  logList: {
+    gap: theme.spacing.md,
+  },
+  logRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  logActions: {
+    flexDirection: 'row',
+    gap: theme.spacing.md,
+    alignItems: 'center',
+  },
+  logDivider: {
+    height: 1,
+    backgroundColor: theme.colors.border,
+    opacity: 0.6,
+    marginTop: theme.spacing.md,
+  },
+  pickerWrap: {
+    marginTop: theme.spacing.md,
+    borderRadius: theme.radii.md,
+    backgroundColor: theme.colors.surfaceAlt,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: theme.colors.border,
   },
 });
