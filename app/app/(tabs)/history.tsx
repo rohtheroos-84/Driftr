@@ -101,10 +101,10 @@ export default function HistoryScreen() {
       : 'not enough data yet';
 
     return {
-      todayLine: `today: ${comparison.todayCount} taps (${comparison.todayLossMinutes}m)` ,
-      yesterdayLine: `yesterday: ${comparison.yesterdayCount} taps (${comparison.yesterdayLossMinutes}m)` ,
-      deltaLine: `change: ${deltaCountLabel}, ${deltaLossLabel}` ,
-      topHourLine: `top hour (last 7 days): ${topHourLabel}` ,
+      todayLine: `today: ${comparison.todayCount} taps (${comparison.todayLossMinutes}m)`,
+      yesterdayLine: `yesterday: ${comparison.yesterdayCount} taps (${comparison.yesterdayLossMinutes}m)`,
+      deltaLine: `change: ${deltaCountLabel}, ${deltaLossLabel}`,
+      topHourLine: `top hour (last 7 days): ${topHourLabel}`,
     };
   }, [comparison]);
 
