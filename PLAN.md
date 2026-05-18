@@ -187,8 +187,8 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 - [x] run a manual smoke test for logging, editing, history, onboarding
 - [x] fix any high-impact bugs
 #### learnings
-- [ ] learn which flows break most often
-- [ ] learn the minimum test coverage needed
+- [x] learn which flows break most often
+- [x] learn the minimum test coverage needed
 
 ### 6.2 privacy and minimal analytics
 #### tasks
