@@ -153,12 +153,12 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 
 ### 5.1 mandatory onboarding flow
 #### tasks
-- [ ] build a 3-screen onboarding flow: what driftr is, how to tap, what insights mean
-- [ ] gate the home screen until onboarding is completed
-- [ ] store onboarding completion locally
+- [x] build a 3-screen onboarding flow: what driftr is, how to tap, what insights mean
+- [x] gate the home screen until onboarding is completed
+- [x] store onboarding completion locally
 #### learnings
-- [ ] learn if the flow is short enough to avoid drop-off
-- [ ] learn if the insight explanation is clear
+- [x] learn if the flow is short enough to avoid drop-off
+- [x] learn if the insight explanation is clear
 
 ### 5.2 copy and empty states
 #### tasks
