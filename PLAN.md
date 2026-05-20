@@ -162,12 +162,12 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 
 ### 5.2 copy and empty states
 #### tasks
-- [ ] apply neutral, non-judgmental copy across screens
-- [ ] design empty states that encourage a first tap
-- [ ] add microcopy after tap and after insight
+- [x] apply neutral, non-judgmental copy across screens
+- [x] design empty states that encourage a first tap
+- [x] add microcopy after tap and after insight
 #### learnings
-- [ ] learn which copy reduces friction and guilt
-- [ ] learn if empty states motivate logging
+- [x] learn which copy reduces friction and guilt
+- [x] learn if empty states motivate logging
 
 ### 5.3 accessibility and performance
 #### tasks
