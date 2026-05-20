@@ -9,6 +9,7 @@ import { formatDayLabel } from '@/src/domain/day-label';
 import { getDailyInsight } from '@/src/domain/insight-engine';
 import { LogEntry } from '@/src/domain/log-entry';
 import { buildPatternComparison } from '@/src/domain/pattern-comparison';
+import { copy } from '@/src/domain/copy';
 import { AppText } from '@/src/ui/components/AppText';
 import { Screen } from '@/src/ui/components/Screen';
 import { SurfaceCard } from '@/src/ui/components/SurfaceCard';
@@ -105,7 +106,7 @@ export default function HistoryScreen() {
       ? `${comparison.topHour.label} (${comparison.topHour.count} taps, ${Math.round(
           comparison.topHour.share * 100,
         )}%)`
-      : 'not enough data yet';
+      : copy.empty.topHour;
 
     return {
       todayLine: `today: ${comparison.todayCount} taps (${comparison.todayLossMinutes}m)`,
@@ -148,7 +149,7 @@ export default function HistoryScreen() {
         {summaries.length === 0 ? (
           <SurfaceCard style={styles.card}>
             <AppText variant="body" tone="muted">
-              no history yet. log a drift to build your timeline.
+              {copy.empty.history}
             </AppText>
           </SurfaceCard>
         ) : (
@@ -169,7 +170,7 @@ export default function HistoryScreen() {
                     insight: {item.insightTitle}
                   </AppText>
                   <AppText variant="label" tone="accent">
-                    view details
+                    {copy.labels.viewDetails}
                   </AppText>
                 </SurfaceCard>
               </Pressable>

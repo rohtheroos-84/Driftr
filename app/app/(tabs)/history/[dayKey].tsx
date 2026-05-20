@@ -20,6 +20,7 @@ import { aggregateDay, getHourlyHistogram } from '@/src/domain/daily-aggregation
 import { formatDayLabel } from '@/src/domain/day-label';
 import { getDailyInsight } from '@/src/domain/insight-engine';
 import { LogEntry } from '@/src/domain/log-entry';
+import { copy } from '@/src/domain/copy';
 import { AppText } from '@/src/ui/components/AppText';
 import { Screen } from '@/src/ui/components/Screen';
 import { SurfaceCard } from '@/src/ui/components/SurfaceCard';
@@ -120,13 +121,13 @@ export default function DayDetailScreen() {
     await loadDay();
 
     if (updated) {
-      showToast({ message: 'updated' });
+      showToast({ message: copy.microcopy.timeUpdated });
     }
   };
 
   const handleEdit = async (log: LogEntry) => {
     if (Platform.OS === 'web') {
-      const response = prompt('set time (hh:mm, 24h)');
+      const response = prompt(copy.microcopy.timePrompt);
 
       if (!response) {
         return;
@@ -137,12 +138,12 @@ export default function DayDetailScreen() {
       const minutes = Number(minuteText);
 
       if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
-        showToast({ message: 'invalid time format. use hh:mm.' });
+        showToast({ message: copy.microcopy.invalidTime });
         return;
       }
 
       if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-        showToast({ message: 'time must be between 00:00 and 23:59.' });
+        showToast({ message: copy.microcopy.invalidRange });
         return;
       }
 
@@ -185,7 +186,12 @@ export default function DayDetailScreen() {
   const handleDelete = async (log: LogEntry) => {
     await setLogDeletedById(log.id, true);
     await loadDay();
-    showToast({ message: 'deleted', actionLabel: 'undo', log, action: 'delete' });
+    showToast({
+      message: copy.microcopy.driftDeleted,
+      actionLabel: 'undo',
+      log,
+      action: 'delete',
+    });
   };
 
   const handleUndo = async () => {
@@ -226,7 +232,7 @@ export default function DayDetailScreen() {
         {logs.length === 0 ? (
           <SurfaceCard style={styles.card}>
             <AppText variant="body" tone="muted">
-              no drifts logged for this day.
+              {copy.empty.dayDetail}
             </AppText>
           </SurfaceCard>
         ) : (
@@ -289,7 +295,7 @@ export default function DayDetailScreen() {
           </View>
           {histogram.maxCount === 0 ? (
             <AppText variant="caption" tone="muted">
-              no drifts logged yet for this day.
+              {copy.empty.dayDetail}
             </AppText>
           ) : null}
         </SurfaceCard>
@@ -300,7 +306,7 @@ export default function DayDetailScreen() {
           </AppText>
           {orderedLogs.length === 0 ? (
             <AppText variant="caption" tone="muted">
-              no drifts logged for this day.
+              {copy.empty.dayDetail}
             </AppText>
           ) : (
             <View style={styles.logList}>

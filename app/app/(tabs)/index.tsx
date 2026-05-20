@@ -27,6 +27,7 @@ import {
 import { aggregateDay, getHourlyHistogram } from '@/src/domain/daily-aggregation';
 import { getDailyInsight } from '@/src/domain/insight-engine';
 import { LogEntry } from '@/src/domain/log-entry';
+import { copy } from '@/src/domain/copy';
 import { toDayKey } from '@/src/domain/time';
 import { theme } from '@/src/ui/theme';
 
@@ -179,14 +180,14 @@ export default function HomeScreen() {
 
     if (updated) {
       showToast({
-        message: `time updated to ${formatTime(updated.timestampIso)}`,
+        message: `${copy.microcopy.timeUpdated} to ${formatTime(updated.timestampIso)}`,
       });
     }
   };
 
   const handleEdit = async (log: LogEntry) => {
     if (Platform.OS === 'web') {
-      const response = prompt('set time (hh:mm, 24h)');
+      const response = prompt(copy.microcopy.timePrompt);
 
       if (!response) {
         return;
@@ -197,12 +198,12 @@ export default function HomeScreen() {
       const minutes = Number(minuteText);
 
       if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
-        showToast({ message: 'invalid time format. use hh:mm.' });
+        showToast({ message: copy.microcopy.invalidTime });
         return;
       }
 
       if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-        showToast({ message: 'time must be between 00:00 and 23:59.' });
+        showToast({ message: copy.microcopy.invalidRange });
         return;
       }
 
@@ -303,7 +304,7 @@ export default function HomeScreen() {
             <Link href="/history" asChild>
               <Pressable hitSlop={10}>
                 <AppText variant="label" tone="accent">
-                  view history
+                  {copy.labels.historyLink}
                 </AppText>
               </Pressable>
             </Link>
@@ -327,7 +328,7 @@ export default function HomeScreen() {
           </View>
           {histogram.maxCount === 0 ? (
             <AppText variant="caption" tone="muted">
-              no drifts yet. the timeline will fill as you log.
+              {copy.empty.todayTimeline}
             </AppText>
           ) : null}
         </SurfaceCard>
@@ -338,7 +339,7 @@ export default function HomeScreen() {
           </AppText>
           {orderedLogs.length === 0 ? (
             <AppText variant="caption" tone="muted">
-              no drifts logged yet
+              {copy.empty.todayLogs}
             </AppText>
           ) : (
             <View style={styles.logList}>
@@ -384,7 +385,7 @@ export default function HomeScreen() {
         </SurfaceCard>
 
         <View style={styles.buttonWrap}>
-          <TapButton label="log a drift" hint="one tap, no guilt" onPress={handleTap} />
+          <TapButton label="log a drift" hint={copy.microcopy.tapHint} onPress={handleTap} />
         </View>
 
         <AppText variant="caption" tone="muted" style={styles.disclaimer}>
