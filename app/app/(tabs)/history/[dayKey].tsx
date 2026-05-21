@@ -32,6 +32,7 @@ const MIN_BAR_HEIGHT = 6;
 const MAX_BAR_HEIGHT = 28;
 const UNDO_WINDOW_MS = 3200;
 const formatTime = (iso: string) => format(new Date(iso), 'h:mm a');
+const HIT_SLOP = 14;
 
 const mergeDateAndTime = (base: Date, time: Date) => {
   const merged = new Date(base);
@@ -217,7 +218,7 @@ export default function DayDetailScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Link href="/history" asChild>
-            <Pressable hitSlop={10}>
+            <Pressable hitSlop={HIT_SLOP}>
               <AppText variant="label" tone="accent">
                 back to history
               </AppText>
@@ -320,12 +321,12 @@ export default function DayDetailScreen() {
                       </AppText>
                     </View>
                     <View style={styles.logActions}>
-                      <Pressable onPress={() => handleEdit(log)} hitSlop={10}>
+                      <Pressable onPress={() => handleEdit(log)} hitSlop={HIT_SLOP}>
                         <AppText variant="label" tone="accent">
                           edit
                         </AppText>
                       </Pressable>
-                      <Pressable onPress={() => handleDelete(log)} hitSlop={10}>
+                      <Pressable onPress={() => handleDelete(log)} hitSlop={HIT_SLOP}>
                         <AppText variant="label" tone="muted">
                           delete
                         </AppText>
