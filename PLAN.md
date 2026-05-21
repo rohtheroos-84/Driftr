@@ -171,13 +171,13 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 
 ### 5.3 accessibility and performance
 #### tasks
-- [ ] ensure tap targets are at least 44px
-- [ ] verify contrast and text scaling
-- [ ] minimize animations to reduce distraction
-- [ ] lazy-load history data for faster first load
+- [x] ensure tap targets are at least 44px
+- [x] verify contrast and text scaling
+- [x] minimize animations to reduce distraction
+- [x] lazy-load history data for faster first load
 #### learnings
-- [ ] learn if lower-end devices still feel responsive
-- [ ] learn if web performance matches mobile
+- [x] learn if lower-end devices still feel responsive
+- [x] learn if web performance matches mobile
 
 ## phase 6: v1 readiness
 
