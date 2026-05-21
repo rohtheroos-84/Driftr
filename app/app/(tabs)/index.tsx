@@ -36,6 +36,7 @@ const UNDO_WINDOW_MS = 3200;
 const formatTime = (iso: string) => format(new Date(iso), 'h:mm a');
 const MIN_BAR_HEIGHT = 6;
 const MAX_BAR_HEIGHT = 28;
+const HIT_SLOP = 14;
 
 const mergeDateAndTime = (base: Date, time: Date) => {
   const merged = new Date(base);
@@ -302,7 +303,7 @@ export default function HomeScreen() {
               timeline
             </AppText>
             <Link href="/history" asChild>
-              <Pressable hitSlop={10}>
+              <Pressable hitSlop={HIT_SLOP}>
                 <AppText variant="label" tone="accent">
                   {copy.labels.historyLink}
                 </AppText>
@@ -353,12 +354,12 @@ export default function HomeScreen() {
                       </AppText>
                     </View>
                     <View style={styles.logActions}>
-                      <Pressable onPress={() => handleEdit(log)} hitSlop={10}>
+                      <Pressable onPress={() => handleEdit(log)} hitSlop={HIT_SLOP}>
                         <AppText variant="label" tone="accent">
                           edit
                         </AppText>
                       </Pressable>
-                      <Pressable onPress={() => handleDelete(log)} hitSlop={10}>
+                      <Pressable onPress={() => handleDelete(log)} hitSlop={HIT_SLOP}>
                         <AppText variant="label" tone="muted">
                           delete
                         </AppText>
@@ -385,7 +386,12 @@ export default function HomeScreen() {
         </SurfaceCard>
 
         <View style={styles.buttonWrap}>
-          <TapButton label="log a drift" hint={copy.microcopy.tapHint} onPress={handleTap} />
+          <TapButton
+            label="log a drift"
+            hint={copy.microcopy.tapHint}
+            onPress={handleTap}
+            pulse={tapCount === 0}
+          />
         </View>
 
         <AppText variant="caption" tone="muted" style={styles.disclaimer}>

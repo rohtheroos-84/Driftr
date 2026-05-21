@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AppState, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  AppState,
+  InteractionManager,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Link } from 'expo-router';
 
@@ -68,13 +75,13 @@ export default function HistoryScreen() {
     setComparison(buildPatternComparison(logs, ESTIMATE_MINUTES_PER_TAP));
   }, []);
 
-  useEffect(() => {
-    void loadHistory();
-  }, [loadHistory]);
-
   useFocusEffect(
     useCallback(() => {
-      void loadHistory();
+      const task = InteractionManager.runAfterInteractions(() => {
+        void loadHistory();
+      });
+
+      return () => task.cancel();
     }, [loadHistory]),
   );
 
