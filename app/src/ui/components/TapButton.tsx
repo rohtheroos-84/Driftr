@@ -9,23 +9,29 @@ type TapButtonProps = {
   label: string;
   onPress: () => void;
   hint?: string;
+  pulse?: boolean;
 };
 
-export function TapButton({ label, onPress, hint }: TapButtonProps) {
+export function TapButton({ label, onPress, hint, pulse: pulseEnabled = true }: TapButtonProps) {
   const scale = useRef(new Animated.Value(1)).current;
-  const pulse = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    if (!pulseEnabled) {
+      pulseAnim.setValue(0);
+      return;
+    }
+
     const animation = Animated.loop(
       Animated.sequence([
-        Animated.timing(pulse, {
+        Animated.timing(pulseAnim, {
           toValue: 1,
-          duration: 1800,
+          duration: 2400,
           useNativeDriver: true,
         }),
-        Animated.timing(pulse, {
+        Animated.timing(pulseAnim, {
           toValue: 0,
-          duration: 1800,
+          duration: 2400,
           useNativeDriver: true,
         }),
       ]),
@@ -34,7 +40,7 @@ export function TapButton({ label, onPress, hint }: TapButtonProps) {
     animation.start();
 
     return () => animation.stop();
-  }, [pulse]);
+  }, [pulseEnabled, pulseAnim]);
 
   const pressIn = () => {
     Animated.spring(scale, {
@@ -54,48 +60,47 @@ export function TapButton({ label, onPress, hint }: TapButtonProps) {
     }).start();
   };
 
-  const pulseScale = pulse.interpolate({
+  const pulseScale = pulseAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [1, 1.08],
+    outputRange: [1, 1.05],
   });
-  const pulseOpacity = pulse.interpolate({
+  const pulseOpacity = pulseAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0.3, 0],
+    outputRange: [0.22, 0],
   });
 
   return (
     <View style={styles.wrap}>
-      <Animated.View
-        pointerEvents="none"
-        style={[
-          styles.pulse,
-          {
-            opacity: pulseOpacity,
-            transform: [{ scale: pulseScale }],
-          },
-        ]}
-      />
+      {pulseEnabled ? (
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            styles.pulse,
+            {
+              opacity: pulseOpacity,
+              transform: [{ scale: pulseScale }],
+            },
+          ]}
+        />
+      ) : null}
       <Pressable
         onPress={onPress}
         onPressIn={pressIn}
         onPressOut={pressOut}
         accessibilityRole="button"
       >
-        <Animated.View style={[styles.animated, { transform: [{ scale }] }]}
-        >
+        <Animated.View style={[styles.animated, { transform: [{ scale }] }]}>
           <LinearGradient
             colors={[theme.colors.accent, '#e4ff8a']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.button}
           >
-            <AppText variant="title" tone="ink" style={styles.label}
-            >
+            <AppText variant="title" tone="ink" style={styles.label}>
               {label}
             </AppText>
             {hint ? (
-              <AppText variant="caption" tone="ink" style={styles.hint}
-              >
+              <AppText variant="caption" tone="ink" style={styles.hint}>
                 {hint}
               </AppText>
             ) : null}
