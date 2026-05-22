@@ -183,9 +183,9 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 
 ### 6.1 test pass
 #### tasks
-- [ ] add unit tests for day_key grouping, estimate calculation, and insight selection
-- [ ] run a manual smoke test for logging, editing, history, onboarding
-- [ ] fix any high-impact bugs
+- [x] add unit tests for day_key grouping, estimate calculation, and insight selection
+- [x] run a manual smoke test for logging, editing, history, onboarding
+- [x] fix any high-impact bugs
 #### learnings
 - [ ] learn which flows break most often
 - [ ] learn the minimum test coverage needed
