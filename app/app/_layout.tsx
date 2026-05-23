@@ -10,8 +10,10 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
+import { AppState } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { flushAnalyticsEvents } from '@/src/data/analytics-store';
 import {
   getOnboardingComplete,
   subscribeOnboardingStatus,
@@ -72,6 +74,18 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded, onboardingComplete]);
+
+  useEffect(() => {
+    void flushAnalyticsEvents();
+
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        void flushAnalyticsEvents();
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
 
   if (!loaded || onboardingComplete === null) {
     return null;
