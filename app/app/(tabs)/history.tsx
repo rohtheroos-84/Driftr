@@ -10,6 +10,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { Link } from 'expo-router';
 
+import { trackAnalyticsEvent } from '@/src/data/analytics-store';
 import { getActiveLogs, recomputeDayKeys } from '@/src/data/log-store';
 import { aggregateDay } from '@/src/domain/daily-aggregation';
 import { formatDayLabel } from '@/src/domain/day-label';
@@ -77,6 +78,7 @@ export default function HistoryScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      void trackAnalyticsEvent('history_opened');
       const task = InteractionManager.runAfterInteractions(() => {
         void loadHistory();
       });

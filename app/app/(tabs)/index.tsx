@@ -17,6 +17,7 @@ import { Screen } from '@/src/ui/components/Screen';
 import { SurfaceCard } from '@/src/ui/components/SurfaceCard';
 import { TapButton } from '@/src/ui/components/TapButton';
 import { Toast } from '@/src/ui/components/Toast';
+import { trackAnalyticsEvent } from '@/src/data/analytics-store';
 import {
   addLog,
   getLogsForDay,
@@ -125,6 +126,7 @@ export default function HomeScreen() {
     const tapWord = nextCount === 1 ? 'tap' : 'taps';
 
     setTodayLogs((current) => [...current, log]);
+    void trackAnalyticsEvent('tap_logged');
     showToast({
       message: `drift logged at ${formatTime(log.timestampIso)} - ${nextCount} ${tapWord} today`,
       actionLabel: 'undo',
@@ -261,7 +263,16 @@ export default function HomeScreen() {
     <Screen>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <AppText variant="display">driftr</AppText>
+          <View style={styles.headerRow}>
+            <AppText variant="display">driftr</AppText>
+            <Link href="/modal" asChild>
+              <Pressable hitSlop={HIT_SLOP}>
+                <AppText variant="label" tone="accent">
+                  {copy.labels.aboutLink}
+                </AppText>
+              </Pressable>
+            </Link>
+          </View>
           <AppText variant="caption" tone="muted">
             one tap to mark a drift
           </AppText>
@@ -417,6 +428,11 @@ const styles = StyleSheet.create({
   header: {
     marginTop: theme.spacing.sm,
     gap: theme.spacing.xs,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   card: {
     gap: theme.spacing.sm,

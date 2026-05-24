@@ -3,6 +3,7 @@ import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 
+import { trackAnalyticsEvent } from '@/src/data/analytics-store';
 import { setOnboardingComplete } from '@/src/data/onboarding-store';
 import { AppText } from '@/src/ui/components/AppText';
 import { Screen } from '@/src/ui/components/Screen';
@@ -69,6 +70,7 @@ export default function OnboardingScreen() {
     }
 
     await setOnboardingComplete(true);
+    void trackAnalyticsEvent('onboarding_complete');
     router.replace('/(tabs)');
   };
 
