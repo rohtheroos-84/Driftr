@@ -10,6 +10,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
 import { Link, useLocalSearchParams } from 'expo-router';
 
+import { trackAnalyticsEvent } from '@/src/data/analytics-store';
 import {
   getLogsForDay,
   recomputeDayKeys,
@@ -71,6 +72,12 @@ export default function DayDetailScreen() {
   useEffect(() => {
     void loadDay();
   }, [loadDay]);
+
+  useEffect(() => {
+    if (dayKey) {
+      void trackAnalyticsEvent('insight_opened');
+    }
+  }, [dayKey]);
 
   useEffect(() => {
     return () => {
