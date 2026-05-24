@@ -192,12 +192,12 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 
 ### 6.2 privacy and minimal analytics
 #### tasks
-- [ ] add a short privacy statement explaining local storage
-- [ ] implement an opt-in toggle for analytics
-- [ ] send only the minimal events defined in phase 0.2 with no personal data
+- [x] add a short privacy statement explaining local storage
+- [x] implement an opt-in toggle for analytics
+- [x] send only the minimal events defined in phase 0.2 with no personal data
 #### learnings
-- [ ] learn if the privacy explanation is clear
-- [ ] learn if analytics opt-in is understood
+- [x] learn if the privacy explanation is clear
+- [x] learn if analytics opt-in is understood
 
 ### 6.3 release prep
 #### tasks
