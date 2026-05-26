@@ -201,10 +201,10 @@ driftr v1 ships as a single expo codebase for android and web, with local-only s
 
 ### 6.3 release prep
 #### tasks
-- [ ] create an android build via eas
-- [ ] export a static web build
-- [ ] verify local data persists across restarts
-- [ ] verify analytics events fire only when enabled
+- [x] create an android build via eas
+- [x] export a static web build
+- [x] verify local data persists across restarts
+- [x] verify analytics events fire only when enabled
 #### learnings
-- [ ] learn if release steps are stable and repeatable
-- [ ] learn which release checks are essential
+- [x] learn if release steps are stable and repeatable
+- [x] learn which release checks are essential
