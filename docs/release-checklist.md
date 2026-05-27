@@ -9,6 +9,9 @@
 - run npm run export:web from the app/ folder
 - output is written to dist/ (ignored by git)
 
+## tests
+- run npm test from the app/ folder
+
 ## verification
 - local data persists: add a log, close the app, reopen, confirm today count and history entries remain
 - analytics opt-in: with analytics off, do a tap, open history, open a day detail, finish onboarding; confirm no [driftr] analytics logs. turn analytics on and repeat; confirm a log appears with counts
