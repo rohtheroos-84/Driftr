@@ -61,6 +61,24 @@ driftr is a one-tap distraction tracker that makes time loss visible with a dail
 - v1 produces one insight per day from simple, non-judgmental rules
 - exact rules are intentionally simple and can be refined after early learning
 
+## privacy and analytics
+- logs are stored locally on the device via async storage
+- analytics is opt-in from the about screen and is off by default
+- only event counts are captured: tap_logged, insight_opened, history_opened, onboarding_complete
+- when enabled, counts are flushed to the console and cleared locally
+
+## scripts (from app/)
+- npm run start
+- npm run android
+- npm run web
+- npm test
+- npm run export:web
+- npm run build:android:preview
+- npm run build:android
+
+## release
+- follow the release checklist in [docs/release-checklist.md](docs/release-checklist.md)
+
 ## platforms
 - android and web in v1
 
@@ -70,5 +88,6 @@ driftr is a one-tap distraction tracker that makes time loss visible with a dail
 - expo router for navigation
 - async storage for local persistence
 - date-fns for date grouping and time windows
-- jest and react native testing library for basic testing
+- jest + jest-expo + react-test-renderer for basic testing
 - eslint and prettier for code quality
+- eas build for android release builds
